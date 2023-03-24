@@ -17,20 +17,49 @@ interface MySpeechRecognition extends SpeechRecognition {
   new (s: string);
 }
 
-interface Settings {
+// interface Settings {
+//   ttsVoice: string;
+//   ttsLexicon: string;
+//   asrLanguage: string;
+//   azureKey: string;
+// }
+
+interface Parameters {
   ttsVoice: string;
   ttsLexicon: string;
   asrLanguage: string;
   azureKey: string;
+  azureNLUKey: string;
+  azureNLUUrl: string;
+  azureNLUprojectName: string;
+  azureNLUdeploymentName: string;
+}
+
+interface ChatInput {
+  past_user_inputs: string[];
+  generated_responses: string[];
+  text: string;
 }
 
 interface SDSContext {
+  // parameters: Parameters;
+  // asr: SpeechRecognition;
+  // tts: SpeechSynthesis;
+  // voice: SpeechSynthesisVoice;
+  // ttsUtterance: MySpeechSynthesisUtterance;
+  // recResult: Hypothesis[];
+  // ttsAgenda: string;
+  // nluResult: any;
+  // azureAuthorizationToken: string;
+  // audioCtx: any;
+
   parameters: Parameters;
   asr: SpeechRecognition;
   tts: SpeechSynthesis;
   voice: SpeechSynthesisVoice;
   ttsUtterance: MySpeechSynthesisUtterance;
   recResult: Hypothesis[];
+  nluResult: any;
   ttsAgenda: string;
   azureAuthorizationToken: string;
   audioCtx: any;
@@ -47,6 +76,11 @@ interface SDSContext {
   request: any;
   data: any;
   information: any;
+  help: any;
+  count: number;
+  welcome: any;
+  query: any;
+  meeting: any;
 }
 
 type SDSEvent =
