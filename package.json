@@ -69,5 +69,6 @@
     "web-speech-cognitive-services": "^7.1.2",
     "web-vitals": "^2.1.0",
     "xstate": "^4.34.0"
-  }
+  },
+  "packageManager": "yarn@3.4.1"
 }
