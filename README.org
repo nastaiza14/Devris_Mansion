@@ -1,6 +1,6 @@
-Project for Dialogue System's course
+# Project for Dialogue System's course
 
-HOW TO PLAY THE GAME:
+## HOW TO PLAY THE GAME:
 
 
 You control the character around the mansion with your voice.
@@ -13,9 +13,10 @@ If something doesn't work, try formulating it differently.
 
 
 
- WALKTHROUGH: 
+ ## WALKTHROUGH: 
 
-(!) Spoilers
+<details>
+<summary>Spoilers</summary>
 
 1. go to library, left shelf, read the highlighted book and get the note with the code or just read the numbers.
 
@@ -26,4 +27,6 @@ If something doesn't work, try formulating it differently.
 4. go downstairs, go to the doll room, open the cabinet and open the shelf with the key.
 
 5. to finish the sample version of the game go to the kitchen.
+
+</details>
 
