@@ -1,4 +1,4 @@
-# Project for Dialogue System's course
+# Project for Dialogue Systems Course
 
 ## HOW TO PLAY THE GAME:
 
