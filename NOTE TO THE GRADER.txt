@@ -1,8 +1,0 @@
-I am conscious of the possible flaws of the mechanics and the possible mistakes there might be in the game, specially in the first floor. 
-However, there is a considerable amount of work put into the game. 
-The smoothest experience might be around the second floor in the library.
-That being said, I had a lot of fun and learned a great deal with this exercise.
-
-Improvements to be made in the intent/entity detection, the user interface and the implementation of sounds.
-
-The presentation is in this folder in the form of a movie.
