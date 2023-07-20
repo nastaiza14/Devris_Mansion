@@ -6,7 +6,7 @@
 
 html, body {
   height: 100vh;
-  background: #000000b3;
+  background: #030627;
 }
 
 .App {
@@ -32,6 +32,23 @@ html, body {
   background: #deff8a;
 }
 
+.nested-div {
+  width: 50%;
+  position: relative;
+  top: 18%;
+  left: 25%;
+}
+
+.nested-div .header1 {
+  color: #90b5f8;
+  text-align: center;
+  padding-bottom: 10px;
+  font-family: Georgia, Times New Roman, Times, serif;
+  font-size: 20px;
+  font-style: italic;
+  font-weight: lighter;
+}
+
 .control .prompt img {
   height: 40vh;
   text-align: left;
@@ -43,11 +60,11 @@ html, body {
   font-family: IBM Plex Mono, monospace;
   font-style: italic;
   font-weight: light;
-  text-align: center;
+  text-align: left;
   color: #c3eaf4;
   z-index: 1;
   padding-top: 10vh;
-  padding-left: 50px;
+  padding-left: 150px;
   padding-right: 20px;
   font-size: 10pt;
   bottom: 0;
@@ -56,7 +73,14 @@ html, body {
 .control .status .status-text, .control .status-talk .status-text {
   z-index: 5;
   white-space: normal;
-  position: relative;
+  width: 96.85%;
+  background-color: #cd1515;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 40px;
+  position: absolute;
+  top: 0%;
+  left: 0%;
 }
 
 .control .circle, .control .circle-recognising, .control .circle-speaking, .control .circle-click {
