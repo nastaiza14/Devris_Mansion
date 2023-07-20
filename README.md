@@ -1,6 +1,6 @@
 # Role Playing and Puzzle game: Devris Mansion 
 
-Game inspired by Sen's 2012 RPG game. Credits in the game.
+Dialogue and Audio only game inspired by Sen's 2012 RPG game. Credits in the game.
 
 ### HOW TO PLAY THE GAME:
 
