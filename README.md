@@ -1,6 +1,9 @@
-# Project for Dialogue Systems Course
+# Role Playing and Puzzle game: Devris Mansion 
+## Project for Dialogue Systems Course
 
-## HOW TO PLAY THE GAME:
+Game inspired by Sen's 2012 RPG game. Credits in the game.
+
+### HOW TO PLAY THE GAME:
 
 
 You control the character around the mansion with your voice.
@@ -13,7 +16,7 @@ If something doesn't work, try formulating it differently.
 
 
 
- ## WALKTHROUGH: 
+ ### WALKTHROUGH: 
 
 <details>
 <summary>Spoilers</summary>
