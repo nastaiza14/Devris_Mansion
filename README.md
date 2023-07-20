@@ -1,5 +1,4 @@
 # Role Playing and Puzzle game: Devris Mansion 
-## Project for Dialogue Systems Course
 
 Game inspired by Sen's 2012 RPG game. Credits in the game.
 
@@ -32,3 +31,6 @@ If something doesn't work, try formulating it differently.
 5. to finish the sample version of the game go to the kitchen.
 
 </details>
+
+Initiatied as a project for Dialogue Systems Course.
+
