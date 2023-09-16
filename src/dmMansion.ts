@@ -2,6 +2,15 @@
 import { MachineConfig, send, Action, assign } from "xstate";
 import { actions } from "xstate";
 
+// AUDIO 
+// big_thunder, discovery, dog_chew, dog_eat, door_lock, footsteps, glass_break, heavy_breath, open_door, door_lock, thunder, wind, wooden_door
+
+// function to play audio
+function playAudio(id: string) {
+  const mySfx = document.getElementById(id) as HTMLAudioElement;
+  return mySfx.play();
+}
+
 const {choose, log} = actions
 
 const sayErrorBack: Action<SDSContext, SDSEvent> = send((context: SDSContext) => ({
@@ -12,6 +21,27 @@ const sayErrorBack: Action<SDSContext, SDSEvent> = send((context: SDSContext) =>
 function say(text: string): Action<SDSContext, SDSEvent> {
   return send((_context: SDSContext) => ({ type: "SPEAK", value: text }));
 }
+
+const waitTwoSec = send(
+  { type: 'TIMER' },
+  {
+    delay: 2500,
+    id: 'twosecondtimer' // give the event a unique ID
+  }
+);
+
+//  needed?
+const images = ["map_1", "map_2"]
+
+// Changing background images to game maps.
+// export function updateMap(num: any) {
+//   const elem = document.getElementById("nestdiv");
+//   if (elem) {
+//     const img = elem.innerHTML = `<div class="nested-div" id="nestdiv"> <img id="mansionmap${num}" src="game_maps/map_${num}" alt="">
+//     </div>`;
+//     return img
+//   }
+// }
 
 interface gameTexts {
   [index: string]: {
@@ -193,7 +223,6 @@ const gameMessage: gameTexts = {
   },
 }
 
-
 interface listObjects {
   [index: string]: boolean
 }
@@ -213,38 +242,6 @@ const gameObjects: listObjects = {
 const objectUpdater = (anObj: keyof listObjects) => {
   gameObjects[anObj] = true
 }
-
-
-// - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - *  - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * 
-
-// I couldn't use this function, I couldn't make it so that it can communicate with audio html elements. How can I do that?- * - * - * - * - * - * 
-
-// Right now it's just a dummy function, so that it can appear in the code. - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * 
-
-// let audio: HTMLAudioElement | null = null;
-
-const soundPlayer = (fileName: string) => {
-//   // audio?.pause();
-//   // audio = new Audio(`mansion_sounds/${fileName}`);
-//   // audio.play();
-  return "hi"
-};
-
-// Call the function to play the sound
-// soundPlayer('audiofile.mp3');
-
-// Call this function to pause the sound
-// const pauseSound = () => {
-//   audio?.pause();
-// };
-
-// html <audio autoplay ...>
-// html <audio loop autoplay ...>
-// html <audio autoplay ...>  send pause when exiting state
-
-// - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - *  - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * 
-// - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - *  - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * - * 
-
 
 export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
   initial: "idle",
@@ -276,6 +273,7 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
               {
                 target: "#root.dm.mansion.hall_2F.hall_2F_speak",
                 cond: (context) => (context.nluResult.prediction.topIntent) === "change room" && gameObjects.oil_lamp_on === false,
+                // actions: [(context) => playAudio("thunder"), "waitBeforeSpeaking"]
               },
               {
                 target: "#root.dm.mansion.hall_2F.hall_2F_light",
@@ -362,7 +360,7 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
             },
             {
               target: "mom_room",
-              cond: (context) => (context.nluResult.prediction.topIntent) === "go to" && (context.nluResult.query).includes("mom's room"),
+              cond: (context) => (context.nluResult.prediction.topIntent) === "go to" && (context.nluResult.query).includes("mom") && (context.nluResult.query).includes("room"),
             },
             // library
             {
@@ -399,13 +397,15 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
             // objects  
             {
               target: ".oil_lamp_lit",
-              cond: (context) => (context.nluResult.prediction.topIntent) === "combine objects" && (context.nluResult.prediction.entities[0].text) === "matches" &&  (context.nluResult.prediction.entities[1].text) === "oil lamp" && gameObjects.matches === true && gameObjects.oil_lamp === true,
-              actions: [(context) => objectUpdater("oil_lamp_on"), soundPlayer("discovery_sound.mp3")]
+              cond: (context) => (context.nluResult.prediction.topIntent) === "combine objects" && (context.nluResult.prediction.entities[0].text) === "match" &&  (context.nluResult.prediction.entities[1].text) === "lamp" && gameObjects.matches === true && gameObjects.oil_lamp === true,
+              actions: [(context) => objectUpdater("oil_lamp_on"), (context) => playAudio("discovery"),
+              { type: "delay", delay: 2500 }]
             },
             {
               target: ".oil_lamp_lit",
               cond: (context) => (context.nluResult.prediction.topIntent) === "combine objects" && (context.nluResult.prediction.entities[0].text) === "oil lamp" &&  (context.nluResult.prediction.entities[1].text) === "matches" && gameObjects.matches === true && gameObjects.oil_lamp === true,
-              actions: [(context) => objectUpdater("oil_lamp_on"), soundPlayer("discovery_sound.mp3")]
+              actions: [(context) => objectUpdater("oil_lamp_on"), (context) => playAudio("discovery"),
+              { type: "delay", delay: 2500 }]
             },
             {
               target: ".read_the_note",
@@ -423,7 +423,7 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
             hall_2F_speak: {
               entry: send((context) => ({
                 type: "SPEAK",
-                value: `${gameMessage.hall_2F_txt.hall_2F_1}` })),
+                value: `${gameMessage.hall_2F_txt.hall_2F_1}`})),
                 on: { ENDSPEECH: "what_should_I_do" }
             },
             hall_2F_light: {
@@ -632,12 +632,14 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
               {
                 target: ".oil_lamp_lit",
                 cond: (context) => (context.nluResult.prediction.topIntent) === "combine objects" && (context.nluResult.prediction.entities[0].text) === "matches" &&  (context.nluResult.prediction.entities[1].text) === "oil lamp" && gameObjects.matches === true && gameObjects.oil_lamp === true,
-                actions: [(context) => objectUpdater("oil_lamp_on"), soundPlayer("discovery_sound.mp3")]
+                actions: [(context) => objectUpdater("oil_lamp_on"), (context) => playAudio("discovery"),
+                { type: "delay", delay: 2500 }]
               },
               {
                 target: ".oil_lamp_lit",
                 cond: (context) => (context.nluResult.prediction.topIntent) === "combine objects" && (context.nluResult.prediction.entities[0].text) === "oil lamp" &&  (context.nluResult.prediction.entities[1].text) === "matches" && gameObjects.matches === true && gameObjects.oil_lamp === true,
-                actions: [(context) => objectUpdater("oil_lamp_on"), soundPlayer("discovery_sound.mp3")]
+                actions: [(context) => objectUpdater("oil_lamp_on"), (context) => playAudio("discovery"),
+                { type: "delay", delay: 2500 }]
               },
               {
                 target: ".read_the_note",
@@ -721,13 +723,14 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
                   on: {
                     RECOGNISED: [
                       // actions
+                      // this should be replaced, just by checking the safe it should be enough, but there are many ways to approach this part
                       {
                         target: "#root.dm.mansion.mom_room.mom_closet.mom_safe.open_safe",
                         cond: (context) => (context.nluResult.prediction.topIntent) === "open object" && (context.nluResult.query).includes("safe"),
                       },
                       {
                         target: "#root.dm.mansion.mom_room.mom_closet.mom_safe.opened_safe",
-                        cond: (context) => (context.recResult[0].utterance.toLowerCase().replace(/\.$/g, "")) === "8, 4, 3, 7, 2",
+                        cond: (context) => (context.recResult[0].utterance.toLowerCase().replace(/\.$/g, "")) === "84372.",
                       },
                       {
                         target: "#root.dm.mansion.hall_2F",
@@ -777,7 +780,8 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
                           {
                             target: ".what_should_I_do",
                             cond: (context) => (context.nluResult.prediction.topIntent) === "take object" && (context.nluResult.query).includes("small key"),
-                            actions: [(context) => objectUpdater("small_key"), soundPlayer("discovery_sound.mp3")],
+                            actions: [(context) => objectUpdater("small_key"), (context) => playAudio("discovery"),
+                            { type: "delay", delay: 2500 }],
                           },
                           {
                             target: ".perfume",
@@ -903,12 +907,14 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
               {
                 target: ".oil_lamp_lit",
                 cond: (context) => (context.nluResult.prediction.topIntent) === "combine objects" && (context.nluResult.prediction.entities[0].text) === "matches" &&  (context.nluResult.prediction.entities[1].text) === "oil lamp" && gameObjects.matches === true && gameObjects.oil_lamp === true,
-                actions: [(context) => objectUpdater("oil_lamp_on"), soundPlayer("discovery_sound.mp3")]
+                actions: [(context) => objectUpdater("oil_lamp_on"), (context) => playAudio("discovery"),
+                { type: "delay", delay: 2500 }]
               },
               {
                 target: ".oil_lamp_lit",
                 cond: (context) => (context.nluResult.prediction.topIntent) === "combine objects" && (context.nluResult.prediction.entities[0].text) === "oil lamp" &&  (context.nluResult.prediction.entities[1].text) === "matches" && gameObjects.matches === true && gameObjects.oil_lamp === true,
-                actions: [(context) => objectUpdater("oil_lamp_on"), soundPlayer("discovery_sound.mp3")]
+                actions: [(context) => objectUpdater("oil_lamp_on"), (context) => playAudio("discovery"),
+                { type: "delay", delay: 2500 }]
               },
               // utilities
               {
@@ -1038,7 +1044,8 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
                     {
                       target: ".take_the_note",
                       cond: (context) => (context.nluResult.prediction.topIntent) === "take object" && (context.nluResult.query).includes("note"),
-                      actions: [(context) => objectUpdater("code_note"), soundPlayer("discovery_sound.mp3")]
+                      actions: [(context) => objectUpdater("code_note"), (context) => playAudio("discovery"),
+                      { type: "delay", delay: 2500 }]
                     },
                     // utilities
                     {
@@ -1242,23 +1249,27 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
               {
                 target: ".matches_taken",
                 cond: (context) => (context.nluResult.prediction.topIntent) === "take object" && (context.nluResult.query).includes("matches"),
-                actions: [(context) => objectUpdater("matches"), soundPlayer("discovery_sound.mp3")],
+                actions: [(context) => objectUpdater("matches"), (context) => playAudio("discovery"),
+                { type: "delay", delay: 2500 }],
               },
               {
                 target: ".oil_lamp_taken",
                 cond: (context) => (context.nluResult.prediction.topIntent) === "take object" && (context.nluResult.query).includes("oil lamp"),
-                actions: [(context) => objectUpdater("oil_lamp"), soundPlayer("discovery_sound.mp3") ],
+                actions: [(context) => objectUpdater("oil_lamp"), (context) => playAudio("discovery"),
+                { type: "delay", delay: 2500 }],
               },
               // v Combining objects to turn on lamp  
               {
                 target: ".oil_lamp_lit",
-                cond: (context) => (context.nluResult.prediction.topIntent) === "combine objects" && (context.nluResult.prediction.entities[0].text) === "oil lamp" &&  (context.nluResult.prediction.entities[1].text === "matches"),
-                actions: [(context) => objectUpdater("oil_lamp_on"), soundPlayer("discovery_sound.mp3")]
+                cond: (context) => (context.nluResult.prediction.topIntent) === "combine objects" && (context.nluResult.query).includes("lamp") && ((context.nluResult.query).includes("match")),
+                actions: [(context) => objectUpdater("oil_lamp_on"), (context) => playAudio("discovery"),
+                { type: "delay", delay: 2500 }]
               },
               {
                 target: ".oil_lamp_lit",
-                cond: (context) => (context.nluResult.prediction.topIntent) === "combine objects" && (context.nluResult.prediction.entities[0].text) === "matches" &&  (context.nluResult.prediction.entities[1].text === "oil lamp"),
-                actions: [(context) => objectUpdater("oil_lamp_on"), soundPlayer("discovery_sound.mp3")]
+                cond: (context) => (context.nluResult.prediction.topIntent) === "combine objects" && ((context.nluResult.query).includes("match")) && ((context.nluResult.query).includes("oil lamp")),
+                actions: [(context) => objectUpdater("oil_lamp_on"), (context) => playAudio("discovery"),
+                { type: "delay", delay: 2500 }]
               },
               //  ^ Combined object to turn on lamp
               // utilities
@@ -1316,7 +1327,8 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
                   {
                     target: ".gasoline_taken",
                     cond: (context) => (context.nluResult.prediction.topIntent) === "take object" && (context.nluResult.query).includes("gasoline"),
-                    actions: [(context) => objectUpdater("gasoline"), soundPlayer("discovery_sound.mp3")],
+                    actions: [(context) => objectUpdater("gasoline"), (context) => playAudio("discovery"),
+                    { type: "delay", delay: 2500 }],
                   },
                   // this is implicitly true -> gameObjects.oil_lamp_on === true
                   {
@@ -1607,12 +1619,14 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
               {
                 target: ".oil_lamp_lit",
                 cond: (context) => (context.nluResult.prediction.topIntent) === "combine objects" && (context.nluResult.prediction.entities[0].text) === "matches" &&  (context.nluResult.prediction.entities[1].text) === "oil lamp" && gameObjects.matches === true && gameObjects.oil_lamp === true,
-                actions: [(context) => objectUpdater("oil_lamp_on"), soundPlayer("discovery_sound.mp3")]
+                actions: [(context) => objectUpdater("oil_lamp_on"), (context) => playAudio("discovery"),
+                { type: "delay", delay: 2500 }]
               },
               {
                 target: ".oil_lamp_lit",
                 cond: (context) => (context.nluResult.prediction.topIntent) === "combine objects" && (context.nluResult.prediction.entities[0].text) === "oil lamp" &&  (context.nluResult.prediction.entities[1].text) === "matches" && gameObjects.matches === true && gameObjects.oil_lamp === true,
-                actions: [(context) => objectUpdater("oil_lamp_on"), soundPlayer("discovery_sound.mp3")]
+                actions: [(context) => objectUpdater("oil_lamp_on"), (context) => playAudio("discovery"),
+                { type: "delay", delay: 2500 }]
               },
               {
                 target: ".no_match",
@@ -1659,7 +1673,9 @@ export const dmMachine: MachineConfig<SDSContext, any, SDSEvent> = {
                   {
                     target: ".opened_chest",
                     cond: (context) => (context.nluResult.prediction.topIntent) === "open object" && (context.nluResult.query).includes("small key") && gameObjects.small_key === true,
-                    actions: (context) => [objectUpdater("rusty_key"), soundPlayer("discovery_sound.mp3")]
+                    actions: (context) => [objectUpdater("rusty_key"), playAudio("discovery"),
+                    { type: "delay", delay: 2500 }]
+                    // why is playAudio allowed (required, rather) to have no (context) here?
                   },
                   {
                     target: "#root.dm.mansion.main_hall",
